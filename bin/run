@@ -1,3 +1,7 @@
-docker build -t fedrampup .
-docker run -v "$(pwd)":/go/src/app \
-           -v "$HOME/.aws":/.aws fedrampup:latest 
+#!/bin/bash
+
+go fmt
+# docker build -t fedrampup .
+# docker run -it -v "$(pwd)":/go/src/fedrampup \
+#            -v "$HOME/.aws":/.aws \
+#            -e PROFILES=dev fedrampup /bin/sh
