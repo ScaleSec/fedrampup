@@ -36,6 +36,7 @@ FedRAMP SSP expects the assets in a CSV with the rows:
 There are several things you can configure, mainly what tags you use to identify assets. A full table of environment variables that can be passed in is below:
 
 | Env Var | Default Value | Description |
+| --- | --- | --- | 
 |REGIONS | `us-gov-west-1` | Comma separated list of AWS regions |
 |ROLES | | Comma separated list of AWS Role ARNs of separate accounts that will be scanned. If empty only the account with the EC2 Role for the host this is running on will be run. If not running on EC2, it will take credentials from Env |
 |OUTPUT_FORMAT | `csv` | Output format can be one of: csv, json |
