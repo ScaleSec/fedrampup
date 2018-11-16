@@ -15,19 +15,19 @@ type Config struct {
 }
 
 type TagMapping struct {
-	netbios                  string
-	assetType                string
-	baselineConfig           string
-	authenticatedScanPlanned string
-	lastScanned              string
-	applicationName          string
-	applicationVersion       string
-	applicationPatchLevel    string
-	applicationFunction      string
-	comments                 string
-	serialNumber             string
-	sysadmin                 string
-	appadmin                 string
+	netbios                   string
+	assetType                 string
+	baselineConfig            string
+	authenticatedScanPlanned  string
+	lastScanned               string
+	applicationVendor         string
+	applicationNameAndVersion string
+	applicationPatchLevel     string
+	applicationFunction       string
+	comments                  string
+	serialNumber              string
+	sysadmin                  string
+	appadmin                  string
 }
 
 func NewConfig() Config {
@@ -41,8 +41,8 @@ func NewConfig() Config {
 		"TAG_BASELINE_CONFIG":            &config.Tags.baselineConfig,
 		"TAG_AUTHENTICATED_SCAN_PLANNED": &config.Tags.authenticatedScanPlanned,
 		"TAG_LAST_SCANNED":               &config.Tags.lastScanned,
-		"TAG_APPLICATION_NAME":           &config.Tags.applicationName,
-		"TAG_APPLICATION_VERSION":        &config.Tags.applicationVersion,
+		"TAG_APPLICATION_VENDOR":         &config.Tags.applicationVendor,
+		"TAG_APPLICATION_NAME_VERSION":   &config.Tags.applicationNameAndVersion,
 		"TAG_APPLICATION_PATCH_LEVEL":    &config.Tags.applicationPatchLevel,
 		"TAG_APPLICATION_FUNCTION":       &config.Tags.applicationFunction,
 		"TAG_COMMENTS":                   &config.Tags.comments,
@@ -70,24 +70,24 @@ func SetStringFromEnv(key string, pointer *string) {
 }
 
 var configDefaults = Config{
-	Regions:      []string{"us-west-2"},
+	Regions:      []string{"us-gov-west-1"},
 	Roles:        []string{},
 	OutputFormat: "csv",
 	OutputFile:   "output.csv",
 	ScanInterval: "1d",
 	Tags: TagMapping{
-		netbios:                  "NetBIOS",
-		assetType:                "AssetType",
-		baselineConfig:           "BaselineConfiguration",
-		authenticatedScanPlanned: "AuthenticatedScanPlanned",
-		lastScanned:              "LastScanned",
-		applicationName:          "ApplicationName",
-		applicationVersion:       "ApplicationVersion",
-		applicationPatchLevel:    "ApplicationPatchLevel",
-		applicationFunction:      "ApplicationFunction",
-		comments:                 "Comments",
-		serialNumber:             "SerialNumber",
-		sysadmin:                 "SysAdmin",
-		appadmin:                 "AppAdmin",
+		netbios:                   "NetBIOS",
+		assetType:                 "AssetType",
+		baselineConfig:            "BaselineConfiguration",
+		authenticatedScanPlanned:  "AuthenticatedScanPlanned",
+		lastScanned:               "LastScanned",
+		applicationVendor:         "ApplicationVendor",
+		applicationNameAndVersion: "ApplicationNameAndVersion",
+		applicationPatchLevel:     "ApplicationPatchLevel",
+		applicationFunction:       "ApplicationFunction",
+		comments:                  "Comments",
+		serialNumber:              "SerialNumber",
+		sysadmin:                  "SysAdmin",
+		appadmin:                  "AppAdmin",
 	},
 }
