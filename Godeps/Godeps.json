@@ -1,7 +1,9 @@
 {
-	"ImportPath": "github.com/tools/godep",
-	"GoVersion": "go1.7",
-	"GodepVersion": "v74",
-	"Deps": [
-	]
+	"ImportPath": ".",
+	"GoVersion": "go1.11",
+	"GodepVersion": "v80",
+	"Packages": [
+		"./..."
+	],
+	"Deps": []
 }
