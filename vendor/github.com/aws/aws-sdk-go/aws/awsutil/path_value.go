@@ -5,8 +5,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-
-	"github.com/jmespath/go-jmespath"
 )
 
 var indexRe = regexp.MustCompile(`(.+)\[(-?\d+)?\]$`)
