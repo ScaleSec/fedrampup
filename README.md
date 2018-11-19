@@ -2,6 +2,30 @@
 
 How annoying is it to get an inventory of AWS resources for FedRAMP and then put that into the SSP formatted CSV? Very. `fedrampup` will handle all of this for you. It can be run on it's own from a Docker container or in AWS in Fargate with S3 output.
 
+# Run
+
+With Go installed
+
+```
+go get -u https://github.com/ScaleSec/fedrampup
+
+# Assuming your environment variables are configured correctly just run
+fedrampup
+```
+
+
+Without Go installed, but using Docker
+
+```
+# Example:
+docker run -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+           -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+           -e "OUTPUT_FILE=s3://my-bucket/output.csv" fedrampup
+```
+
+# Authentication
+
+If you pass in [AWS environment variables](https://docs.aws.amazon.com/cli/latest/userguide/cli-environment.html) into `fedrampup` it will use those, otherwise it will assume you are running on an EC2 instance or ECS container (recommended) and use standard instance profile authentication.
 
 # Configuration
 
@@ -36,12 +60,13 @@ FedRAMP SSP expects the assets in a CSV with the rows:
 There are several things you can configure, mainly what tags you use to identify assets. A full table of environment variables that can be passed in is below:
 
 | Env Var | Default Value | Description |
-| --- | --- | --- | 
+| --- | --- | --- |
 |REGIONS | `us-gov-west-1` | Comma separated list of AWS regions |
 |ROLES | | Comma separated list of AWS Role ARNs of separate accounts that will be scanned. If empty only the account with the EC2 Role for the host this is running on will be run. If not running on EC2, it will take credentials from Env |
 |OUTPUT_FORMAT | `csv` | Output format can be one of: csv, json |
 |OUTPUT_FILE | `output.csv` | Output file name. If this starts with `s3://` it will be treated as an S3 URI |
-|SCAN_INTERVAL | `1d` | How often security scans are run in your organization in Go duration format (i.e. 1d, 5h, etc.) |
+|AWS_REGION | `us-gov-west-1` | If S3 output is desired, this is the region of the S3 bucket.  
+|SCAN_INTERVAL | `24h` | How often security scans are run in your organization in [Go duration format](https://golang.org/pkg/time/#ParseDuration) (i.e. 1h10m, 5m, etc.) |
 |TAG_NETBIOS | `NetBIOS`| EC2 tag used for NetBIOS name for Windows hosts|
 |TAG_ASSET_TYPE | `AssetType` | EC2 tag used for Asset Type |
 |TAG_BASELINE_CONFIG | `BaselineConfiguration` | EC2 tag used for Baseline Configuration|

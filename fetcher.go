@@ -27,18 +27,13 @@ func (this *Fetcher) Run() ([]*Instance, error) {
 		for _, role := range this.config.Roles {
 			for _, region := range this.config.Regions {
 				creds := stscreds.NewCredentials(this.sess, role)
-				client := ec2.New(this.sess, &aws.Config{
-					Region:      aws.String(region),
-					Credentials: creds,
-				})
+				client := ec2.New(this.sess, aws.NewConfig().WithCredentials(creds).WithRegion(region))
 				err = this.RunBatch(client)
 			}
 		}
 	} else {
 		for _, region := range this.config.Regions {
-			client := ec2.New(this.sess, &aws.Config{
-				Region: aws.String(region),
-			})
+			client := ec2.New(this.sess, aws.NewConfig().WithRegion(region))
 			err = this.RunBatch(client)
 		}
 	}
@@ -46,7 +41,7 @@ func (this *Fetcher) Run() ([]*Instance, error) {
 }
 
 func (this *Fetcher) RunBatch(client *ec2.EC2) error {
-	instancesResult, err := client.DescribeInstances(nil)
+	instancesResult, err := client.DescribeInstances(&ec2.DescribeInstancesInput{})
 	if err != nil {
 		return err
 	}

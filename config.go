@@ -74,7 +74,7 @@ var configDefaults = Config{
 	Roles:        []string{},
 	OutputFormat: "csv",
 	OutputFile:   "output.csv",
-	ScanInterval: "1d",
+	ScanInterval: "24h",
 	Tags: TagMapping{
 		netbios:                   "NetBIOS",
 		assetType:                 "AssetType",

@@ -6,6 +6,9 @@ import (
 	"time"
 )
 
+//Gives the ability to stub out Now in tests
+var Now = time.Now
+
 type Instance struct {
 	rawImage    *ec2.Image
 	rawInstance *ec2.Instance
@@ -85,7 +88,7 @@ func (this *Instance) IsInLatestScan() string {
 
 	// NOTE: time.Sub() gives a duration, but time.Add()
 	// returns a time, which we need, so we'll add the negative
-	if lastScanned.After(time.Now().Add(interval * -1)) {
+	if lastScanned.After(Now().Add(interval * -1)) {
 		return "Yes"
 	} else {
 		return "No"

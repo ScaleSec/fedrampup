@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds"
+	"github.com/aws/aws-sdk-go/aws/defaults"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"log"
@@ -17,6 +18,7 @@ import (
 func main() {
 	config := NewConfig()
 	sess := GetSession()
+
 	instances, err := NewFetcher(config, sess).Run()
 	if err != nil {
 		log.Fatal(err)
@@ -42,7 +44,6 @@ func main() {
 		}); err != nil {
 			log.Fatal(err)
 		}
-
 	} else {
 		file, err := os.Create(config.OutputFile)
 		if err != nil {
@@ -65,6 +66,6 @@ func GetSession() *session.Session {
 	if _, err := creds.Get(); err != nil {
 		log.Fatal(err)
 	}
-	sess.Config = &aws.Config{Credentials: creds}
+	sess.Config = defaults.Config().WithCredentials(creds)
 	return sess
 }
