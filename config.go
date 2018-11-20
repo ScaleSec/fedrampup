@@ -8,7 +8,6 @@ import (
 type Config struct {
 	Regions      []string
 	Roles        []string
-	OutputFormat string
 	OutputFile   string
 	ScanInterval string
 	Tags         TagMapping
@@ -30,10 +29,9 @@ type TagMapping struct {
 	appadmin                  string
 }
 
-func NewConfig() Config {
+func NewConfig() *Config {
 	config := configDefaults
 	envMap := map[string]*string{
-		"OUTPUT_FORMAT":                  &config.OutputFormat,
 		"OUTPUT_FILE":                    &config.OutputFile,
 		"SCAN_INTERVAL":                  &config.ScanInterval,
 		"TAG_NETBIOS":                    &config.Tags.netbios,
@@ -63,16 +61,20 @@ func NewConfig() Config {
 	return config
 }
 
+func (this *Config) OutputFormat() string {
+	split := strings.Split(this.OutputFile, ".")
+	return split[len(split)-1]
+}
+
 func SetStringFromEnv(key string, pointer *string) {
 	if len(os.Getenv(key)) > 0 {
 		*pointer = os.Getenv(key)
 	}
 }
 
-var configDefaults = Config{
+var configDefaults = &Config{
 	Regions:      []string{"us-gov-west-1"},
 	Roles:        []string{},
-	OutputFormat: "csv",
 	OutputFile:   "output.csv",
 	ScanInterval: "24h",
 	Tags: TagMapping{

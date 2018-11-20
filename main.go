@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -15,6 +16,10 @@ import (
 	"strings"
 )
 
+type Rowable interface {
+	Row() []string
+}
+
 func main() {
 	config := NewConfig()
 	sess := GetSession()
@@ -23,17 +28,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	buffer := new(bytes.Buffer)
-	w := csv.NewWriter(buffer)
-	w.Write(Headers)
-	for _, instance := range instances {
-		if err := w.Write(instance.Row()); err != nil {
-			log.Fatalln("error writing record to csv:", err)
-		}
+	// To pass in the instances as a slice of interfaces you need
+	// to manually convert to the interface.
+	rowables := make([]Rowable, len(instances))
+	for idx, inst := range instances {
+		rowables[idx] = inst
 	}
-	w.Flush()
-
+	buffer := Dump(rowables, config)
 	if strings.HasPrefix(config.OutputFile, "s3://") {
 		path := strings.Split(config.OutputFile, "/")
 		uploader := s3manager.NewUploader(sess)
@@ -46,12 +47,38 @@ func main() {
 		}
 	} else {
 		file, err := os.Create(config.OutputFile)
+		defer file.Close()
 		if err != nil {
 			fmt.Print(buffer.String())
 			log.Fatal(err)
 		}
 		file.WriteString(buffer.String())
 	}
+}
+
+func Dump(instances []Rowable, config *Config) *bytes.Buffer {
+	buffer := new(bytes.Buffer)
+	if config.OutputFormat() == "csv" {
+		w := csv.NewWriter(buffer)
+		w.Write(Headers)
+		for _, instance := range instances {
+			if err := w.Write(instance.Row()); err != nil {
+				log.Fatalln("error writing record to csv:", err)
+			}
+		}
+		w.Flush()
+	} else if config.OutputFormat() == "json" {
+		jsonData, err := json.MarshalIndent(instances, "", "  ")
+		if err != nil {
+			log.Fatal(err)
+		}
+		if _, err := buffer.Write(jsonData); err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		log.Fatalf("Unsupported output format %s", config.OutputFormat())
+	}
+	return buffer
 }
 
 func GetSession() *session.Session {

@@ -8,20 +8,20 @@ import (
 )
 
 type Fetcher struct {
-	config    Config
-	instances []*Instance
+	config    *Config
+	instances []*AwsInstance
 	sess      *session.Session
 }
 
-func NewFetcher(config Config, sess *session.Session) *Fetcher {
+func NewFetcher(config *Config, sess *session.Session) *Fetcher {
 	return &Fetcher{
 		config:    config,
 		sess:      sess,
-		instances: []*Instance{},
+		instances: []*AwsInstance{},
 	}
 }
 
-func (this *Fetcher) Run() ([]*Instance, error) {
+func (this *Fetcher) Run() ([]*AwsInstance, error) {
 	var err error
 	if len(this.config.Roles) > 0 {
 		for _, role := range this.config.Roles {
@@ -56,11 +56,7 @@ func (this *Fetcher) RunBatch(client *ec2.EC2) error {
 					return err
 				}
 				image := imagesResult.Images[0]
-				this.instances = append(this.instances, &Instance{
-					rawInstance: instance,
-					rawImage:    image,
-					config:      this.config,
-				})
+				this.instances = append(this.instances, NewAwsInstance(instance, image, this.config))
 			}
 		}
 

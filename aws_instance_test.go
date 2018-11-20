@@ -18,7 +18,7 @@ func TestIsInLatestScan(t *testing.T) {
 	scanInterval := &ec2.Tag{Key: aws.String("ScanInterval"), Value: aws.String("72h")}
 	lastScanned := &ec2.Tag{Key: aws.String("LastScanned"), Value: aws.String(testTime)}
 	rawInstance := &ec2.Instance{Tags: []*ec2.Tag{scanInterval, lastScanned}}
-	instance := &Instance{rawInstance: rawInstance, config: NewConfig()}
+	instance := &AwsInstance{rawInstance: rawInstance, config: NewConfig()}
 	instance.LoadTags()
 	if res := instance.IsInLatestScan(); res != "Yes" {
 		t.Errorf("IsInLatestScan should have been %s but was %s", "Yes", res)
