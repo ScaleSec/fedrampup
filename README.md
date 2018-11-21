@@ -2,6 +2,8 @@
 
 How annoying is it to get an inventory of AWS resources for FedRAMP and then put that into the SSP formatted CSV? Very. `fedrampup` will handle all of this for you. It can be run on it's own from a Docker container or in AWS in Fargate with S3 output.
 
+FedRAMP requires a full list of assets in the cloud and quite a bit of data around it in the form of an Excel template called the SSP. This asset identification process can be tedious and expensive especially if you have multiple cloud accounts. Fedrampup allows you to automate asset collection by running a container that can automatically update an S3 CSV file in the exact you need for FedRAMP.
+
 # Run
 
 With Go installed
@@ -79,3 +81,12 @@ There are several things you can configure, mainly what tags you use to identify
 |TAG_SERIAL_NUMBER | `SerialNumber` | EC2 tag used for the asset's serial number|
 |TAG_SYSADMIN | `SysAdmin` | EC2 tag used for the asset's sysadmin or team|
 |TAG_APPADMIN | `AppAdmin` | EC2 tag used for the asset's appadmin or team|
+
+
+# Development
+
+1. Make changes
+2. Add tests
+3. Run go tests with `make test`
+4. If you want to run locally, `make run`
+5. Push your change to a fork and open a PR
