@@ -11,17 +11,19 @@ type Fetcher struct {
 	config    *Config
 	instances []*AwsInstance
 	sess      *session.Session
+	journaler *Journaler
 }
 
-func NewFetcher(config *Config, sess *session.Session) *Fetcher {
+func NewFetcher(config *Config, sess *session.Session, journaler *Journaler) *Fetcher {
 	return &Fetcher{
 		config:    config,
 		sess:      sess,
 		instances: []*AwsInstance{},
+		journaler: journaler,
 	}
 }
 
-func (this *Fetcher) Run() ([]*AwsInstance, error) {
+func (this *Fetcher) Run() (string, error) {
 	var err error
 	if len(this.config.Roles) > 0 {
 		for _, role := range this.config.Roles {
@@ -37,7 +39,7 @@ func (this *Fetcher) Run() ([]*AwsInstance, error) {
 			err = this.RunBatch(client)
 		}
 	}
-	return this.instances, err
+	return this.journaler.Filename, err
 }
 
 func (this *Fetcher) RunBatch(client *ec2.EC2) error {
@@ -56,7 +58,10 @@ func (this *Fetcher) RunBatch(client *ec2.EC2) error {
 					return err
 				}
 				image := imagesResult.Images[0]
-				this.instances = append(this.instances, NewAwsInstance(instance, image, this.config))
+				instance := NewAwsInstance(instance, image, this.config)
+
+				// Add journal entry
+				this.journaler.Write(instance.Row())
 			}
 		}
 

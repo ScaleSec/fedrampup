@@ -65,7 +65,7 @@ There are several things you can configure, mainly what tags you use to identify
 | --- | --- | --- |
 |REGIONS | `us-gov-west-1` | Comma separated list of AWS regions |
 |ROLES | | Comma separated list of AWS Role ARNs of separate accounts that will be scanned. If empty only the account with the EC2 Role for the host this is running on will be run. If not running on EC2, it will take credentials from Env |
-|OUTPUT_FILE | `output.csv` | Output file name. If this starts with `s3://` it will be treated as an S3 URI. Output format can be one of: csv, json |
+|OUTPUT_FILE | `output.csv` | Output file name. If this starts with `s3://` it will be treated as an S3 URI. Output format can be one of: csv |
 |AWS_REGION | `us-gov-west-1` | If S3 output is desired, this is the region of the S3 bucket.  
 |SCAN_INTERVAL | `24h` | How often security scans are run in your organization in [Go duration format](https://golang.org/pkg/time/#ParseDuration) (i.e. 1h10m, 5m, etc.) |
 |TAG_NETBIOS | `NetBIOS`| EC2 tag used for NetBIOS name for Windows hosts|
