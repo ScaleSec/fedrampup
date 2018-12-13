@@ -1,3 +1,7 @@
+#!/bin/bash
+# Dependencies
+yum install -y git
+
 # Download and install golang
 VERSION=${go_version}
 curl -o /tmp/$VERSION.tar.gz "https://dl.google.com/go/$VERSION.linux-amd64.tar.gz"
@@ -8,7 +12,7 @@ export GOPATH=/opt/go
 mkdir -p /opt/go/src /opt/go/pkg /opt/go/bin
 
 # Get the FedRAMPup package
-/usr/local/bin/go get https://github.com/ScaleSec/fedrampup
+/usr/local/go/bin/go get github.com/ScaleSec/fedrampup
 
 # Create cron script to use ENV vars
 WRAPPER=/opt/fedrampup-wrapper
