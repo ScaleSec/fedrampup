@@ -33,6 +33,11 @@ resource "aws_iam_role" "fedrampup" {
 EOF
 }
 
+resource "aws_iam_role_policy_attachment" "fedrampup_audit_attachment" {
+  role = "${aws_iam_role.fedrampup.name}"
+  policy_arn = "${data.aws_iam_policy.security_audit.arn}"
+}
+
 resource "aws_iam_role_policy_attachment" "fedrampup_attachment" {
   role       = "${aws_iam_role.fedrampup.name}"
   policy_arn = "${aws_iam_policy.fedrampup.arn}"

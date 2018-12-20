@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 data "aws_ami" "amznlinux" {
   most_recent = true
 
@@ -15,4 +17,8 @@ data "template_file" "user_data" {
     aws_region = "${var.region}"
     s3_uri  = "${local.s3_uri}"
   }
+}
+
+data "aws_iam_policy" "security_audit" {
+  arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/SecurityAudit"
 }
