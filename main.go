@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds"
 	"github.com/aws/aws-sdk-go/aws/defaults"
+	"github.com/aws/aws-sdk-go/aws/ec2metadata"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"io/ioutil"
@@ -53,11 +54,13 @@ func main() {
 func GetSession() *session.Session {
 	var creds *credentials.Credentials
 	sess := session.Must(session.NewSession())
-
-	if len(os.Getenv("AWS_ACCESS_KEY_ID")) > 0 {
-		creds = credentials.NewEnvCredentials()
+	meta := ec2metadata.New(sess)
+	if meta.Available() {
+		creds = credentials.NewCredentials(&ec2rolecreds.EC2RoleProvider{
+			Client: meta,
+		})
 	} else {
-		creds = credentials.NewCredentials(&ec2rolecreds.EC2RoleProvider{})
+		creds = credentials.NewEnvCredentials()
 	}
 	if _, err := creds.Get(); err != nil {
 		log.Fatal(err)

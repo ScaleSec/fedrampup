@@ -18,8 +18,8 @@ mkdir -p /opt/go/src /opt/go/pkg /opt/go/bin
 WRAPPER=/opt/fedrampup-wrapper
 cat << EOF > $WRAPPER
 #!/bin/bash
-AWS_REGION=${aws_region}
-OUTPUT_FILE=${s3_uri}
+export AWS_REGION=${aws_region}
+export OUTPUT_FILE=${s3_uri}
 
 /opt/go/bin/fedrampup
 EOF
