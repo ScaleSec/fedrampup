@@ -29,6 +29,98 @@ docker run -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
 
 If you pass in [AWS environment variables](https://docs.aws.amazon.com/cli/latest/userguide/cli-environment.html) into `fedrampup` it will use those, otherwise it will assume you are running on an EC2 instance or ECS container (recommended) and use standard instance profile authentication.
 
+# Permissions/Setup
+
+The example in `examples/terraform-ec2` shows creating two policies: one for S3 and then attaching the AWS Managed `SecurityAudit` policy. Since FedRAMPup can be run either in the account where it lives, or STS into other accounts, the permissions will have to be slightly different, so we'll handle both those cases:
+
+### Single Account - Run FedRAMPup in the account that you're scanning
+The policies attached to the role of the instance running FedRAMPup should be:
+
+1. Create a Role with the following trust relationship
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowEC2RoleAssumption",
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Effect": "Allow"
+    }
+  ]
+}
+```
+2. Create a policy for Bucket Write permissions (only if your output is S3) and attach it to the Role created in step 1.
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "",
+            "Effect": "Allow",
+            "Action": "s3:PutObject",
+            "Resource": [
+                "[BUCKET_ARN]/*",
+                "[BUCKET_ARN]"
+            ]
+        }
+    ]
+}
+```
+
+3. Attach the AWS Managed `SecurityAudit` policy to the Role created in Step 1.
+4. Use that Role to attach to an EC2 instance, ECS Task, etc.
+
+
+### Multiple Accounts - Run FedRAMPup in a different account than those you are scanning
+
+1. Follow Steps 1 and 2 from the above section. Before you move on, you should have a Role in the account where FedRAMPup lives into other accounts that will be used for the resource (EC2 or ECS) running FedRAMPup.
+
+2. Create a policy in the account where FedRAMPup lives to grant AssumeRole permissions to each of the accounts you want to access.
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowAssumeRole",
+            "Effect": "Allow",
+            "Action": [
+                "sts:AssumeRole"
+            ],
+            "Resource": [
+                "arn:aws:iam::111111111111:role/security_audit",
+                "arn:aws:iam::222222222222:role/security_audit",
+                ...
+            ]
+        }
+    ]
+}
+```
+
+3. Attach this policy to your FedRAMPup role.
+4. Create a role in each account that you want to Assume Role into that corresponds with the policy for AssumeRole you just created. This role should have the following Trust Policy
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::[FedRAMPup Account ID]:root"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+```
+
+5. With the new role created allowing FedRAMPup to AssumeRole, you'll need to give this role that same `SecurityAudit` permission we talked about in the "Single Account" section.
+6. Repeat step 5 and 6 for every account specified in the policy for FedRAMPup
+
 # Configuration
 
 Everyone's environment is different. That's why `fedrampup` has an extensive configuration framework based in environments in keeping with a [12 factor application](https://12factor.net/).

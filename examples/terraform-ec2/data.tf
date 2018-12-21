@@ -20,5 +20,5 @@ data "template_file" "user_data" {
 }
 
 data "aws_iam_policy" "security_audit" {
-  arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/SecurityAudit"
+  arn = "arn:aws-us-gov:iam::aws:policy/SecurityAudit"
 }

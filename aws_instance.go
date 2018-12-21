@@ -119,6 +119,9 @@ func (this *AwsInstance) IsPublic() string {
 }
 
 func (this *AwsInstance) GetMacAddress() string {
+	if len(this.rawInstance.NetworkInterfaces) == 0 {
+		return ""
+	}
 	return aws.StringValue(this.rawInstance.NetworkInterfaces[0].MacAddress)
 }
 
