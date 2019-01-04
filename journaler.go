@@ -59,9 +59,11 @@ func (this *Journaler) listen() {
 			}
 			this.journal.Flush()
 		case <-this.quitCh:
+			fmt.Println("Closing")
 			this.fd.Close()
 			this.wg.Done()
-			return
+			break
 		}
 	}
+
 }

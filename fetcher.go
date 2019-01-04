@@ -24,6 +24,7 @@ func NewFetcher(config *Config, sess *session.Session, journaler *Journaler) *Fe
 }
 
 func (this *Fetcher) Run() (string, error) {
+	defer this.journaler.Close()
 	var err error
 	if len(this.config.Roles) > 0 {
 		for _, role := range this.config.Roles {
